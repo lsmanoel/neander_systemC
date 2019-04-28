@@ -1,3 +1,5 @@
+//---------------------
+
 #include "machine_state.h"
 
 using namespace std;
@@ -165,12 +167,12 @@ SC_MODULE(programmer){
 					break;
 
 				case TARGET_READ_MEM_STATE:
-					cout << "--read";
+					cout << "--read" << endl;
 					target_read_memory_state_process(); 
 					program_counter++;	 	
 					break;
 				case TARGET_WRITE_MEM_STATE:
-					cout << "--write";
+					cout << "--write" << endl;
 					target_write_memory_state_process(); 
 					program_counter++;	 	
 					break;
@@ -880,6 +882,9 @@ SC_MODULE(neander){
 	void exit_state_process()
 	{
 		main_state = HALT_STATE;
+
+		rd.write(false);
+		wr.write(false);
 	}
 
 	void reset_state_process()
@@ -887,6 +892,9 @@ SC_MODULE(neander){
 		main_state = START_STATE;
 
 		rst();
+
+		rd.write(false);
+		wr.write(false);
 	}
 
 	void start_state_process()
@@ -894,9 +902,11 @@ SC_MODULE(neander){
 		cout << "===================================" << endl;
 		cout << this->name() <<" THREAD says: " << "START" << endl;
 		cout << "===================================" << endl;
+		rd.write(false);
+		wr.write(false);
 	}
 
-	void standby_state_process(sc_uint<8> standby_state)
+	void standby_state_process()
 	{
 		rd.write(false);
 		wr.write(false);
@@ -908,6 +918,8 @@ SC_MODULE(neander){
 		cout << this->name() << "HALT!" << endl;
 		cout << "===================================" << endl;
 		cout << "+++++++++++++++++++++++++++++++++++" << endl;
+		rd.write(false);
+		wr.write(false);
 		while(1){wait();};
 	}
 
@@ -916,6 +928,8 @@ SC_MODULE(neander){
 		cout << "===================================" << endl;
 		cout << this->name() <<" THREAD says: " << "HelloWord" << endl;
 		cout << "===================================" << endl;
+		rd.write(false);
+		wr.write(false);
 	}
 
 	void prog_read_mem_state_process()
@@ -971,7 +985,7 @@ SC_MODULE(neander){
 				prog_write_mem_state_process();
 				break;
 
-			default: standby_state_process(STANDBY_STATE);
+			default: standby_state_process();
 		};
 
 
