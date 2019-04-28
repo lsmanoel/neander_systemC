@@ -159,10 +159,11 @@ SC_MODULE(mem){
 	sc_in<uint8_t> 			data_in;
 	sc_out<uint8_t> 		data_out;
 
-	sc_signal<uint8_t>* memory_bank;
+	sc_uint<8>* memory_bank;
 
-	void memory_load(sc_signal<uint8_t>* memory_bank_addrs){
+	void memory_load(sc_uint<8>* memory_bank_addrs){
 		memory_bank = memory_bank_addrs;
+		cout << this->name() <<" memory_bank[0]=" << memory_bank[0] << endl;
 	}
 
 	SC_CTOR(mem)
@@ -180,12 +181,12 @@ SC_MODULE(mem){
 
 	void mem_rd_process()
 	{
-		data_out.write(memory_bank[addr_in.read()].read()); 
+		data_out.write(memory_bank[addr_in.read()]); 
 	}
 
 	void mem_wr_process()
 	{
-		memory_bank[addr_in.read()].write(data_in.read());
+		memory_bank[addr_in.read()] = data_in.read();
 	}
 
 	void helloword(){
@@ -258,6 +259,15 @@ SC_MODULE(uc){
 
 	}
 
+	void halt_state_process()
+	{
+		cout << "===================================" << endl;
+		cout << "HALT!" << endl;
+		cout << "===================================" << endl;
+		cout << "+++++++++++++++++++++++++++++++++++" << endl;
+		while(1){};
+	}
+
 	void reset_state_process()
 	{
 		rst();
@@ -268,18 +278,9 @@ SC_MODULE(uc){
 
 	}
 
-	void standby_state_process()
+	void stop_state_process()
 	{
-	
-	}
 
-	void halt_state_process()
-	{
-		cout << "===================================" << endl;
-		cout << "HALT!" << endl;
-		cout << "===================================" << endl;
-		cout << "+++++++++++++++++++++++++++++++++++" << endl;
-		while(1){};
 	}
 
 	void helloword_state_process()
@@ -288,6 +289,86 @@ SC_MODULE(uc){
 		cout << this->name() <<" THREAD says: " << "HelloWord" << endl;
 		cout << "===================================" << endl;
 	}
+
+	void standby_state_process()
+	{
+	
+	}
+
+	void fetch_operating_state_process()
+	{
+		cout << " -> FETCH_OPERATING";
+		mem_rd.write(true);
+		mem_addr_sel.write(true);		
+	}
+
+	void load_ac_state_process()
+	{
+		cout << " -> LOAD_AC|" << endl;
+	}
+
+	void state_process()
+	{
+		switch(main_state){
+			case EXIT_STATE:
+				main_state.write(HALT_STATE);  
+				//-----------------------------
+				exit_state_process(); 
+				break;
+
+			case START_STATE:
+				main_state.write(FETCH_OP_STATE); 
+				//-----------------------------
+				start_state_process(); 
+				break;
+
+			case STOP_STATE:
+				main_state.write(STANDBY_STATE); 
+				//-----------------------------
+				stop_state_process(); 
+				break;
+
+			case RESET_STATE:
+				main_state.write(STANDBY_STATE); 
+				//-----------------------------
+				reset_state_process(); 
+				break;	
+
+			case HALT_STATE:
+				//----------------------------- 		
+				halt_state_process(); 
+				break;
+
+			case HELLOWORD_STATE:
+				main_state.write(STANDBY_STATE); 	
+				//-----------------------------
+				helloword_state_process(); 
+				break;
+
+			case FETCH_OP_STATE:
+				if(_operating.read())
+					main_state.write(FETCH_OPERATING_STATE);
+				else
+					main_state.write(LOAD_AC_STATE);
+				//-----------------------------
+				fetch_op_state_process();
+				break;
+
+			case FETCH_OPERATING_STATE:
+				main_state.write(LOAD_AC_STATE);
+				//-----------------------------
+				fetch_operating_state_process();
+				break;
+
+			case LOAD_AC_STATE:
+				main_state.write(FETCH_OP_STATE);
+				//-----------------------------
+				load_ac_state_process();
+				break;
+
+			default: standby_state_process(); 
+		}
+	};
 
 	//=========================================================================
 	// instruction_decoder:	
@@ -404,75 +485,6 @@ SC_MODULE(uc){
 			default: nop_op_process(); break;
 		};
 	}
-
-	void fetch_operating_state_process()
-	{
-		cout << " -> FETCH_OPERATING";
-		mem_rd.write(true);
-		mem_addr_sel.write(true);		
-	}
-
-	void load_ac_state_process()
-	{
-		cout << " -> LOAD_AC|" << endl;
-	}
-
-	void state_process()
-	{
-		switch(main_state){
-			case EXIT_STATE:
-				main_state.write(HALT_STATE);  
-				//-----------------------------
-				exit_state_process(); 
-				break;
-
-			case START_STATE:
-				main_state.write(FETCH_OP_STATE); 
-				//-----------------------------
-				start_state_process(); 
-				break;
-
-			case RESET_STATE:
-				main_state.write(STANDBY_STATE); 
-				//-----------------------------
-				reset_state_process(); 
-				break;	
-
-			case HALT_STATE:
-				//----------------------------- 		
-				halt_state_process(); 
-				break;
-
-			case HELLOWORD_STATE:
-				main_state.write(STANDBY_STATE); 	
-				//-----------------------------
-				helloword_state_process(); 
-				break;
-
-			case FETCH_OP_STATE:
-				if(_operating.read())
-					main_state.write(FETCH_OPERATING_STATE);
-				else
-					main_state.write(LOAD_AC_STATE);
-				//-----------------------------
-				fetch_op_state_process();
-				break;
-
-			case FETCH_OPERATING_STATE:
-				main_state.write(LOAD_AC_STATE);
-				//-----------------------------
-				fetch_operating_state_process();
-				break;
-
-			case LOAD_AC_STATE:
-				main_state.write(FETCH_OP_STATE);
-				//-----------------------------
-				load_ac_state_process();
-				break;
-
-			default: standby_state_process(); 
-		}
-	};
 };
 
 
@@ -615,26 +627,6 @@ SC_MODULE(neander){
 
 	}
 
-	void reset_state_process()
-	{
-		main_state = START_STATE;
-
-		rst();
-
-	}
-
-	void start_state_process()
-	{
-		cout << "===================================" << endl;
-		cout << this->name() <<" THREAD says: " << "START" << endl;
-		cout << "===================================" << endl;
-	}
-
-	void standby_state_process()
-	{
-
-	}
-
 	void halt_state_process()
 	{
 		cout << "===================================" << endl;
@@ -645,6 +637,25 @@ SC_MODULE(neander){
 		while(1){wait();};
 	}
 
+	void reset_state_process()
+	{
+		rst();
+	}
+
+	void start_state_process()
+	{
+		cout << "===================================" << endl;
+		cout << this->name() <<" THREAD says: " << "START" << endl;
+		cout << "===================================" << endl;
+	}
+
+	void stop_state_process()
+	{
+		cout << "===================================" << endl;
+		cout << this->name() <<" THREAD says: " << "STOP" << endl;
+		cout << "===================================" << endl;
+	}
+
 	void helloword_state_process()
 	{
 		cout << "===================================" << endl;
@@ -652,11 +663,9 @@ SC_MODULE(neander){
 		cout << "===================================" << endl;
 	}
 
-	void memory_boot_state_process()
+	void standby_state_process()
 	{
-		cout << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
-		cout << this->name() <<" THREAD says: " << "Memory Boot!" << endl;
-		cout << "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
+
 	}
 
 	void state_process()
@@ -671,16 +680,20 @@ SC_MODULE(neander){
 			case NOP_STATE:
 				program_counter++;
 				break;
-			case START_STATE:	
-				start_state_process();
-				program_counter++;
+			case HALT_STATE: 		
+				halt_state_process();
 				break;
 			case RESET_STATE: 	
 				reset_state_process();
 				program_counter++;
 				break;			
-			case HALT_STATE: 		
-				halt_state_process();
+			case START_STATE:	
+				start_state_process();
+				program_counter++;
+				break;
+			case STOP_STATE:	
+				stop_state_process();
+				program_counter++;
 				break;
 			case HELLOWORD_STATE: 	
 				helloword_state_process();
@@ -689,8 +702,6 @@ SC_MODULE(neander){
 
 			default: standby_state_process();
 		};
-
-
 	}
 
 		//-------------------------------------------------------------------------
@@ -706,11 +717,11 @@ SC_MODULE(neander){
 		cout << endl;
 
 		sc_uint<8> bootloader_neander[]={
-			//RESET_STATE,
-			//START_STATE,
-			//HELLOWORD_STATE,
+			RESET_STATE,
+			START_STATE,
 			HELLOWORD_STATE,
-			STANDBY_STATE
+			// HELLOWORD_STATE,
+			STANDBY_STATE,
 		};
 
 
@@ -722,7 +733,10 @@ SC_MODULE(neander){
 
 		_nea->set_program(bootloader_neander);
 
+		sc_uint<8> memory_bank_1[255];
+		memory_bank_1[0]=128;
 
+		_nea->mem_1->memory_load(memory_bank_1);
 		
 		//---------------------------------------------------------------------
 		sc_trace_file *t_file = sc_create_vcd_trace_file(trace_file);
