@@ -1,0 +1,231 @@
+$date
+     Apr 27, 2019       22:35:09
+$end
+
+$version
+ SystemC 2.3.3-Accellera --- Mar 27 2019 08:27:45
+$end
+
+$timescale
+     1 ps
+$end
+
+$scope module SystemC $end
+$var wire    1  aaaaj  prog_mode       $end
+$var wire    8  aaaak  prog_state [7:0]  $end
+$scope module nea $end
+$var wire    1  aaaaa  clock       $end
+$var wire    1  aaaac  pc_load       $end
+$var wire    1  aaaad  pc_inc       $end
+$var wire    1  aaaae  mem_addr_sel       $end
+$var wire    1  aaaaf  mem_rd       $end
+$var wire    1  aaaag  mem_wr       $end
+$var wire    1  aaaah  ac_load       $end
+$var wire    8  aaaai  main_state [7:0]  $end
+$var wire    8  aaaam  prog_state [7:0]  $end
+$var wire    8  aaaan  prog_state [7:0]  $end
+$var wire    1  aaaao  prog_mode       $end
+$scope module cu $end
+$var wire    8  aaaab  main_state [7:0]  $end
+$var wire    1  aaaal  clock       $end
+$upscope $end
+$upscope $end
+$upscope $end
+$enddefinitions  $end
+
+$comment
+All initial values are dumped below at time 0 sec = 0 timescale units.
+$end
+
+$dumpvars
+1aaaaa
+b111 aaaab
+0aaaac
+0aaaad
+0aaaae
+0aaaaf
+0aaaag
+0aaaah
+b111 aaaai
+1aaaaj
+b0 aaaak
+1aaaal
+b0 aaaam
+b0 aaaan
+1aaaao
+$end
+
+#500
+0aaaaa
+0aaaal
+
+#1000
+1aaaaa
+b10 aaaai
+b1000 aaaak
+1aaaal
+b1000 aaaam
+b1000 aaaan
+
+#1500
+0aaaaa
+0aaaal
+
+#2000
+1aaaaa
+b1000 aaaai
+b1001 aaaak
+1aaaal
+b1001 aaaam
+b1001 aaaan
+
+#2500
+0aaaaa
+0aaaal
+
+#3000
+1aaaaa
+b1011 aaaab
+b1001 aaaai
+0aaaaj
+b0 aaaak
+1aaaal
+b0 aaaam
+b0 aaaan
+0aaaao
+
+#3500
+0aaaaa
+0aaaal
+
+#4000
+1aaaaa
+b111 aaaab
+b111 aaaai
+1aaaal
+
+#4500
+0aaaaa
+0aaaal
+
+#5000
+1aaaaa
+1aaaal
+
+#5500
+0aaaaa
+0aaaal
+
+#6000
+1aaaaa
+1aaaal
+
+#6500
+0aaaaa
+0aaaal
+
+#7000
+1aaaaa
+1aaaal
+
+#7500
+0aaaaa
+0aaaal
+
+#8000
+1aaaaa
+1aaaal
+
+#8500
+0aaaaa
+0aaaal
+
+#9000
+1aaaaa
+1aaaal
+
+#9500
+0aaaaa
+0aaaal
+
+#10000
+1aaaaa
+1aaaal
+
+#10500
+0aaaaa
+0aaaal
+
+#11000
+1aaaaa
+1aaaal
+
+#11500
+0aaaaa
+0aaaal
+
+#12000
+1aaaaa
+1aaaal
+
+#12500
+0aaaaa
+0aaaal
+
+#13000
+1aaaaa
+1aaaal
+
+#13500
+0aaaaa
+0aaaal
+
+#14000
+1aaaaa
+1aaaal
+
+#14500
+0aaaaa
+0aaaal
+
+#15000
+1aaaaa
+1aaaal
+
+#15500
+0aaaaa
+0aaaal
+
+#16000
+1aaaaa
+1aaaal
+
+#16500
+0aaaaa
+0aaaal
+
+#17000
+1aaaaa
+1aaaal
+
+#17500
+0aaaaa
+0aaaal
+
+#18000
+1aaaaa
+1aaaal
+
+#18500
+0aaaaa
+0aaaal
+
+#19000
+1aaaaa
+1aaaal
+
+#19500
+0aaaaa
+0aaaal
+
+#20000
