@@ -1,6 +1,11 @@
 // *****************************************************************************
 // lucas on 29/03/19.
 // *****************************************************************************
+#include <iostream>
+#include <systemc.h>
+
+#define N_CYCLES_RUN 40
+#define _DEFAULT 0xff
 
 //=============================================================================
 //*****************************************************************************
@@ -17,27 +22,9 @@ enum{
 };
 
 //=============================================================================
-//Neander Programmser states
-enum{
-	STANDBY_PROG_STATE=STANDBY_STATE,
-	TARGET_LOCK_STATE,
-	TARGET_DROP_STATE,
-	TARGET_READ_MEM_STATE,
-	TARGET_WRITE_MEM_STATE,
-	TARGET_HELLOWORD_STATE,
-	TARGET_STANDBY_STATE
-};
-
-#define N_CYCLES_RUN 40
-
-#define _DEFAULT 0xff
-
-//=============================================================================
 //NEANDER states
 enum{
-	STANDBY_NEA_STATE=STANDBY_STATE,
-	PROG_READ_MEM_STATE,
-	PROG_WRITE_MEM_STATE		
+	STANDBY_NEA_STATE=STANDBY_STATE,	
 };
 
 //=============================================================================
@@ -46,9 +33,7 @@ enum{
 	STANDBY_UI_STATE=STANDBY_STATE,
 	FETCH_OP_STATE,
 	FETCH_OPERATING_STATE,
-	LOAD_AC_STATE,
-	NEA_READ_MEM_STATE,
-	NEA_WRITE_MEM_STATE
+	LOAD_AC_STATE
 };
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

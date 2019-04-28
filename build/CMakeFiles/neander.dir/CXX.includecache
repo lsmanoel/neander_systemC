@@ -7,6 +7,10 @@
 #IncludeRegexTransform: 
 
 /home/lucas/CLionProjects/neander/machine_state.h
+iostream
+-
+systemc.h
+-
 
 /home/lucas/CLionProjects/neander/main.cpp
 systemc.h

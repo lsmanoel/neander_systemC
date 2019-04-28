@@ -1,5 +1,5 @@
 $date
-     Apr 27, 2019       22:35:09
+     Apr 28, 2019       18:07:56
 $end
 
 $version
@@ -11,8 +11,6 @@ $timescale
 $end
 
 $scope module SystemC $end
-$var wire    1  aaaaj  prog_mode       $end
-$var wire    8  aaaak  prog_state [7:0]  $end
 $scope module nea $end
 $var wire    1  aaaaa  clock       $end
 $var wire    1  aaaac  pc_load       $end
@@ -22,12 +20,9 @@ $var wire    1  aaaaf  mem_rd       $end
 $var wire    1  aaaag  mem_wr       $end
 $var wire    1  aaaah  ac_load       $end
 $var wire    8  aaaai  main_state [7:0]  $end
-$var wire    8  aaaam  prog_state [7:0]  $end
-$var wire    8  aaaan  prog_state [7:0]  $end
-$var wire    1  aaaao  prog_mode       $end
 $scope module cu $end
 $var wire    8  aaaab  main_state [7:0]  $end
-$var wire    1  aaaal  clock       $end
+$var wire    1  aaaaj  clock       $end
 $upscope $end
 $upscope $end
 $upscope $end
@@ -46,186 +41,165 @@ b111 aaaab
 0aaaaf
 0aaaag
 0aaaah
-b111 aaaai
+b110 aaaai
 1aaaaj
-b0 aaaak
-1aaaal
-b0 aaaam
-b0 aaaan
-1aaaao
 $end
 
 #500
 0aaaaa
-0aaaal
+0aaaaj
 
 #1000
 1aaaaa
-b10 aaaai
-b1000 aaaak
-1aaaal
-b1000 aaaam
-b1000 aaaan
+b111 aaaai
+1aaaaj
 
 #1500
 0aaaaa
-0aaaal
+0aaaaj
 
 #2000
 1aaaaa
-b1000 aaaai
-b1001 aaaak
-1aaaal
-b1001 aaaam
-b1001 aaaan
+1aaaaj
 
 #2500
 0aaaaa
-0aaaal
+0aaaaj
 
 #3000
 1aaaaa
-b1011 aaaab
-b1001 aaaai
-0aaaaj
-b0 aaaak
-1aaaal
-b0 aaaam
-b0 aaaan
-0aaaao
+1aaaaj
 
 #3500
 0aaaaa
-0aaaal
+0aaaaj
 
 #4000
 1aaaaa
-b111 aaaab
-b111 aaaai
-1aaaal
+1aaaaj
 
 #4500
 0aaaaa
-0aaaal
+0aaaaj
 
 #5000
 1aaaaa
-1aaaal
+1aaaaj
 
 #5500
 0aaaaa
-0aaaal
+0aaaaj
 
 #6000
 1aaaaa
-1aaaal
+1aaaaj
 
 #6500
 0aaaaa
-0aaaal
+0aaaaj
 
 #7000
 1aaaaa
-1aaaal
+1aaaaj
 
 #7500
 0aaaaa
-0aaaal
+0aaaaj
 
 #8000
 1aaaaa
-1aaaal
+1aaaaj
 
 #8500
 0aaaaa
-0aaaal
+0aaaaj
 
 #9000
 1aaaaa
-1aaaal
+1aaaaj
 
 #9500
 0aaaaa
-0aaaal
+0aaaaj
 
 #10000
 1aaaaa
-1aaaal
+1aaaaj
 
 #10500
 0aaaaa
-0aaaal
+0aaaaj
 
 #11000
 1aaaaa
-1aaaal
+1aaaaj
 
 #11500
 0aaaaa
-0aaaal
+0aaaaj
 
 #12000
 1aaaaa
-1aaaal
+1aaaaj
 
 #12500
 0aaaaa
-0aaaal
+0aaaaj
 
 #13000
 1aaaaa
-1aaaal
+1aaaaj
 
 #13500
 0aaaaa
-0aaaal
+0aaaaj
 
 #14000
 1aaaaa
-1aaaal
+1aaaaj
 
 #14500
 0aaaaa
-0aaaal
+0aaaaj
 
 #15000
 1aaaaa
-1aaaal
+1aaaaj
 
 #15500
 0aaaaa
-0aaaal
+0aaaaj
 
 #16000
 1aaaaa
-1aaaal
+1aaaaj
 
 #16500
 0aaaaa
-0aaaal
+0aaaaj
 
 #17000
 1aaaaa
-1aaaal
+1aaaaj
 
 #17500
 0aaaaa
-0aaaal
+0aaaaj
 
 #18000
 1aaaaa
-1aaaal
+1aaaaj
 
 #18500
 0aaaaa
-0aaaal
+0aaaaj
 
 #19000
 1aaaaa
-1aaaal
+1aaaaj
 
 #19500
 0aaaaa
-0aaaal
+0aaaaj
 
 #20000
