@@ -1,498 +1,19 @@
-#include "machine_state.h"
-
-using namespace std;
-
 // *****************************************************************************
 // lucas on 29/03/19.
 // *****************************************************************************
 
-//=============================================================================
-//*****************************************************************************
-//Mux:
-SC_MODULE(mux)
-{
-	sc_in<bool> 		sel;
+#ifndef Neander_H
+#define Neander_H
 
-	sc_in<uint8_t> 		input_a;
-	sc_in<uint8_t> 		input_b;
-	sc_out<uint8_t> 	output;
-
-	void process()
-	{
-		if(sel) output.write(input_b);
-		else output.write(input_a);
-	}
-
-	SC_CTOR(mux)
-	{
-		SC_METHOD(process);
-		sensitive << input_a << input_b << sel;
-	}
-
-	void helloword()
-	{
-		cout << "-----------------------------------" << endl;
-		cout << this->name() <<" says: HelloWord" << endl;
-		cout << "-----------------------------------" << endl;
-	}
-};
-
-//=============================================================================
-//*****************************************************************************
-//Arithmetic Logic Unit (ULA):
-SC_MODULE(ula){
-	sc_out<bool> 		flagN;
-	sc_out<bool> 		flagZ;
-
-	sc_in<uint8_t> 		op;
-	sc_in<uint8_t> 		input_a;
-	sc_in<uint8_t> 		input_b;
-	sc_out<uint8_t>		result;
-
-	sc_signal<uint8_t>	_add_result;
-	sc_signal<uint8_t>	_or_result;
-	sc_signal<uint8_t>	_and_result;
-	sc_signal<uint8_t>	_not_result;
-
-
-	void process()
-	{
-		
-		_add_result = input_a + input_b;
-		_or_result  = input_a | input_b;
-		_and_result = input_a & input_b;
-		_not_result = ~input_a;
-		switch(op){
-			case ULA_ADD: result.write(_add_result); break;
-			case ULA_OR:  result.write(_or_result);  break;
-			case ULA_AND: result.write(_and_result); break;
-			case ULA_NOT: result.write(_not_result); break;
-			default: 	  result.write(input_a);
-		}
-
-	}
-
-	SC_CTOR(ula)
-	{
-		SC_METHOD(process);
-		sensitive << input_a << input_b << op; 
-	}
-
-	void helloword()
-	{
-		cout << "-----------------------------------" << endl;
-		cout << this->name() <<" says: HelloWord" << endl;
-		cout << "-----------------------------------" << endl;
-	}
-};
-
-//=============================================================================
-//*****************************************************************************
-//Acumulator:
-SC_MODULE(ac){
-	sc_in<bool>				load;
-	sc_in<uint8_t> 			input_a;
-	sc_out<uint8_t> 		data_out;
-
-	void process()
-	{
-		if(load) data_out.write(input_a);
-	}
-
-	SC_CTOR(ac)
-	{
-		SC_METHOD(process);
-		sensitive << load.pos();
-	}
-
-	void helloword()
-	{
-		cout << "-----------------------------------" << endl;
-		cout << this->name() <<" says: HelloWord" << endl;
-		cout << "-----------------------------------" << endl;
-	}
-
-};
-
-//=============================================================================
-//*****************************************************************************
-SC_MODULE(pc)
-{
-	sc_in<bool> 		inc;
-	sc_in<bool> 		load;
-
-	sc_out<uint8_t> 	data_out;
-	sc_in<uint8_t> 		input_a;
-	sc_uint<8> 			_counter;
-
-	void process()
-	{		
-		if(load) _counter = input_a.read();
-		if(inc) _counter++;
-		data_out.write(_counter);
-	}
-
-	SC_CTOR(pc)
-	{
-		SC_METHOD(process)
-		sensitive << inc << load;
-	}
-
-	void helloword()
-	{
-		cout << "-----------------------------------" << endl;
-		cout << this->name() <<" says: HelloWord" << endl;
-		cout << "-----------------------------------" << endl;
-	}	
-};
-
-//=============================================================================
-//*****************************************************************************
-//Memory:
-SC_MODULE(mem){
-	sc_in<bool> 			rd;
-	sc_in<bool> 			wr;
-
-	const sc_uint<8> 		zero=0;
-
-	sc_in<uint8_t> 			addr_in;
-	sc_in<uint8_t> 			data_in;
-	sc_out<uint8_t> 		data_out;
-
-	sc_uint<8>* memory_bank;
-
-	void memory_load(sc_uint<8>* memory_bank_addrs){
-		memory_bank = memory_bank_addrs;
-		cout << this->name() <<" memory_bank[0]=" << memory_bank[0] << endl;
-	}
-
-	SC_CTOR(mem)
-	{
-		SC_METHOD(process);
-		sensitive << rd << wr;
-	}
-
-	void process()
-	{
-		if(rd) mem_rd_process();
-		if(wr) mem_wr_process();
-		else data_out.write(data_in.read());
-	}
-
-	void mem_rd_process()
-	{
-		data_out.write(memory_bank[addr_in.read()]); 
-	}
-
-	void mem_wr_process()
-	{
-		memory_bank[addr_in.read()] = data_in.read();
-	}
-
-	void helloword(){
-		cout << "-----------------------------------" << endl;
-		cout << this->name() <<" says: HelloWord" << endl;
-		cout << "-----------------------------------" << endl;
-	}
-};
-
-//=============================================================================
-//*****************************************************************************
-//Control Unit
-SC_MODULE(uc){
-	sc_uint<8> uc_counter_cycle;
-
-	sc_in<bool>			clock;
-
-	sc_in<bool> 		ula_flagN;
-	sc_in<bool> 		ula_flagZ;
-
-	sc_out<uint8_t>		ula_op;
-
-	sc_out<bool>		pc_load;
-	sc_out<bool>		pc_inc;
-
-	sc_out<bool>		mem_addr_sel;
-	sc_out<bool>		mem_rd;
-	sc_out<bool>		mem_wr;
-
-	sc_out<bool>		ac_load;
-
-	sc_in<uint8_t>		instruction_decoder;
-
-	sc_signal<uint8_t> 	main_state;
-	sc_signal<bool>		_operating;
-
-	void process(){
-		while(main_state){
-			state_process();
-			wait();
-		}
-	}
-
-
-	SC_CTOR(uc)
-	{
-		main_state.write(RESET_STATE);
-
-		uc_counter_cycle=0;
-
-		SC_CTHREAD(process, clock.pos())	
-	}
-
-	void helloword(){
-		cout << "-----------------------------------" << endl;
-		cout << this->name() <<" says: HelloWord" << endl;
-		cout << "-----------------------------------" << endl;
-	}
-
-	void rst()
-	{
-		mem_wr.write(false);
-		mem_rd.write(false);	
-	}
-
-	//=========================================================================
-	// Machine State:
-	void exit_state_process()
-	{
-
-	}
-
-	void halt_state_process()
-	{
-		cout << "===================================" << endl;
-		cout << "HALT!" << endl;
-		cout << "===================================" << endl;
-		cout << "+++++++++++++++++++++++++++++++++++" << endl;
-		while(1){};
-	}
-
-	void reset_state_process()
-	{
-		rst();
-	}
-
-	void start_state_process()
-	{
-
-	}
-
-	void stop_state_process()
-	{
-
-	}
-
-	void helloword_state_process()
-	{
-		cout << "===================================" << endl;
-		cout << this->name() <<" THREAD says: " << "HelloWord" << endl;
-		cout << "===================================" << endl;
-	}
-
-	void standby_state_process()
-	{
-	
-	}
-
-	void fetch_operating_state_process()
-	{
-		cout << " -> FETCH_OPERATING";
-		mem_rd.write(true);
-		mem_addr_sel.write(true);		
-	}
-
-	void load_ac_state_process()
-	{
-		cout << " -> LOAD_AC|" << endl;
-	}
-
-	void state_process()
-	{
-		switch(main_state){
-			case EXIT_STATE:
-				main_state.write(HALT_STATE);  
-				//-----------------------------
-				exit_state_process(); 
-				break;
-
-			case START_STATE:
-				main_state.write(FETCH_OP_STATE); 
-				//-----------------------------
-				start_state_process(); 
-				break;
-
-			case STOP_STATE:
-				main_state.write(STANDBY_STATE); 
-				//-----------------------------
-				stop_state_process(); 
-				break;
-
-			case RESET_STATE:
-				main_state.write(STANDBY_STATE); 
-				//-----------------------------
-				reset_state_process(); 
-				break;	
-
-			case HALT_STATE:
-				//----------------------------- 		
-				halt_state_process(); 
-				break;
-
-			case HELLOWORD_STATE:
-				main_state.write(STANDBY_STATE); 	
-				//-----------------------------
-				helloword_state_process(); 
-				break;
-
-			case FETCH_OP_STATE:
-				if(_operating.read())
-					main_state.write(FETCH_OPERATING_STATE);
-				else
-					main_state.write(LOAD_AC_STATE);
-				//-----------------------------
-				fetch_op_state_process();
-				break;
-
-			case FETCH_OPERATING_STATE:
-				main_state.write(LOAD_AC_STATE);
-				//-----------------------------
-				fetch_operating_state_process();
-				break;
-
-			case LOAD_AC_STATE:
-				main_state.write(FETCH_OP_STATE);
-				//-----------------------------
-				load_ac_state_process();
-				break;
-
-			default: standby_state_process(); 
-		}
-	};
-
-	//=========================================================================
-	// instruction_decoder:	
-
-	void nop_op_process()
-	{
-		_operating.write(false);
-		cout << "|" << endl;
-	}
-
-	void sta_op_process()
-	{
-		mem_rd.write(true);
-		mem_addr_sel.write(true);
-		mem_wr.write(true);
-
-		_operating.write(true);
-	}
-
-	void lda_op_process()
-	{
-		mem_rd.write(true);
-		mem_addr_sel.write(true);
-		ula_op.write(ULA_BYPASS);
-		ac_load.write(true);
-
-		_operating = true;
-	}
-
-	void add_op_process()
-	{
-		mem_rd.write(true);
-		mem_addr_sel.write(true);
-		ula_op.write(ULA_ADD);
-		ac_load.write(true);
-
-		_operating.write(true);
-	}
-
-	void or_op_process()
-	{
-		mem_rd.write(true);
-		mem_addr_sel.write(true);
-		ula_op.write(ULA_OR);
-		ac_load.write(true);
-
-		_operating.write(true);
-	}
-
-	void and_op_process()
-	{
-		mem_rd.write(true);
-		mem_addr_sel.write(true);
-		ula_op.write(ULA_AND);
-		ac_load.write(true);
-
-		_operating.write(true);
-	}
-
-	void not_op_process()
-	{
-		ula_op.write(ULA_NOT);
-		ac_load.write(true);
-
-		_operating.write(false);
-	}
-
-	void jmp_op_process()
-	{
-		mem_rd.write(true);
-		pc_load.write(true);
-
-		_operating.write(true);
-	}
-
-	void jn_op_process()
-	{
-		if(ula_flagN){
-			mem_rd.write(true);
-			pc_load.write(true);
-		}
-
-		_operating.write(true);
-	}
-
-	void jz_op_process()
-	{
-		if(ula_flagZ){
-			mem_rd.write(true);
-			pc_load.write(true);
-		}
-
-		_operating.write(true);
-	}
-
-	void fetch_op_state_process()
-	{
-		cout << "-----------------------------------" << endl;
-		cout << "-> FETCH_OP";
-		mem_rd.write(true);
-		switch(instruction_decoder)
-		{
-			case STA_STATE: sta_op_process(); 		break;
-			case LDA_STATE: lda_op_process(); 		break;
-			case ADD_STATE: add_op_process(); 		break;	
-			case OR_STATE: 	or_op_process(); 		break; 
-			case AND_STATE: and_op_process(); 		break; 
-			case NOT_STATE: not_op_process(); 		break; 
-			case JMP_STATE: jmp_op_process(); 		break; 
-			case JN_STATE: 	jn_op_process(); 		break; 
-			case JZ_STATE: 	jz_op_process(); 		break; 
-			case HLT_STATE: halt_state_process(); 	break;
-
-			default: nop_op_process(); break;
-		};
-	}
-};
-
+using namespace std;
 
 //=============================================================================
 //*****************************************************************************
 //Neander:
 SC_MODULE(neander){
 	sc_in<bool>			clock;
+
+	//----------------------------------------------
 	uc*					uc_1;
 	pc*					pc_1;
 	mux*				mux_1;
@@ -500,16 +21,12 @@ SC_MODULE(neander){
 	ula*				ula_1;
 	ac* 				ac_1;
 
+	//----------------------------------------------
 	sc_uint<8> 			program_counter;
 	sc_uint<8>* 		program;
 	sc_uint<8> 			main_state;	
 
 	//----------------------------------------------
-	sc_signal<bool> 	ula_flagN;
-	sc_signal<bool> 	ula_flagZ;
-	sc_signal<uint8_t>	ula_op;
-	sc_signal<uint8_t>	ula_result;
-
 	sc_signal<bool>		pc_load;
 	sc_signal<bool>		pc_inc;
 	sc_signal<uint8_t>	pc_data_out;
@@ -521,6 +38,11 @@ SC_MODULE(neander){
 	sc_signal<uint8_t>	mem_data_in;
 	sc_signal<uint8_t>	mem_data_out;
 	sc_signal<uint8_t>	mem_addr_in;
+
+	sc_signal<bool> 	ula_flagN;
+	sc_signal<bool> 	ula_flagZ;
+	sc_signal<uint8_t>	ula_op;
+	sc_signal<uint8_t>	ula_result;
 	
 	sc_signal<bool>		ac_load;
 	sc_signal<uint8_t> 	ac_data_out;
@@ -538,7 +60,7 @@ SC_MODULE(neander){
 	{
 		uc_1 = new uc("UC");
 		pc_1 = new pc("PC");
-		mux_1 = new mux("MUX1");
+		mux_1 = new mux("MUX");
 		mem_1 = new mem("MEM");
 		ula_1 = new ula("ULA");
 		ac_1 = new ac("AC");
@@ -572,9 +94,8 @@ SC_MODULE(neander){
 		pc_1->input_a(mem_data_out);
 
 		//------------------------------------------
-		mux_1->input_a(pc_data_out);
-
 		mux_1->sel(mem_addr_sel);
+		mux_1->input_a(pc_data_out);
 		mux_1->input_b(mem_data_out);
 		mux_1->output(mem_addr_in);
 
@@ -610,9 +131,19 @@ SC_MODULE(neander){
 		cout << "-----------------------------------" << endl;
 	}
 
-	void rst(){
-		// RESET
-		program_counter=0;
+	void reset_machine()
+	{
+		main_state = RESET_STATE;
+	}
+
+	void start_machine()
+	{
+		main_state = START_STATE;
+	}
+
+	void stop_machine()
+	{
+		main_state = STOP_STATE;
 	}
 
 	void set_program(sc_uint<8>* program_input){
@@ -639,28 +170,31 @@ SC_MODULE(neander){
 
 	void reset_state_process()
 	{
-		rst();
+		// RESET
+		program_counter=0;
 	}
 
 	void start_state_process()
 	{
-		cout << "===================================" << endl;
-		cout << this->name() <<" THREAD says: " << "START" << endl;
-		cout << "===================================" << endl;
+		// cout << "===================================" << endl;
+		// cout << this->name() <<" THREAD says: " << "START" << endl;
+		// cout << "===================================" << endl;
+
+		uc_1->start_machine();
 	}
 
 	void stop_state_process()
 	{
-		cout << "===================================" << endl;
-		cout << this->name() <<" THREAD says: " << "STOP" << endl;
-		cout << "===================================" << endl;
+		// cout << "===================================" << endl;
+		// cout << this->name() <<" THREAD says: " << "STOP" << endl;
+		// cout << "===================================" << endl;
 	}
 
 	void helloword_state_process()
 	{
-		cout << "===================================" << endl;
-		cout << this->name() <<" THREAD says: " << "HelloWord" << endl;
-		cout << "===================================" << endl;
+		// cout << "===================================" << endl;
+		// cout << this->name() <<" THREAD says: " << "HelloWord" << endl;
+		// cout << "===================================" << endl;
 	}
 
 	void standby_state_process()
@@ -719,7 +253,6 @@ SC_MODULE(neander){
 		sc_uint<8> bootloader_neander[]={
 			RESET_STATE,
 			START_STATE,
-			HELLOWORD_STATE,
 			// HELLOWORD_STATE,
 			STANDBY_STATE,
 		};
@@ -734,7 +267,19 @@ SC_MODULE(neander){
 		_nea->set_program(bootloader_neander);
 
 		sc_uint<8> memory_bank_1[255];
-		memory_bank_1[0]=128;
+
+		sc_uint<8> _program_index = 0;
+
+		//memory_bank_1[_program_index++]=NOP_STATE;
+		memory_bank_1[_program_index++]=LDA_STATE;
+		memory_bank_1[_program_index++]=100;
+		memory_bank_1[_program_index++]=ADD_STATE;
+		memory_bank_1[_program_index++]=102;
+		memory_bank_1[_program_index++]=STA_STATE;
+		memory_bank_1[_program_index++]=255;
+		memory_bank_1[_program_index++]=HLT_STATE;
+
+
 
 		_nea->mem_1->memory_load(memory_bank_1);
 		
@@ -744,15 +289,29 @@ SC_MODULE(neander){
 		sc_trace(t_file, _nea->uc_1->clock, "nea.cu.clock");
 
 		sc_trace(t_file, _nea->uc_1->main_state, "nea.cu.main_state");
+		sc_trace(t_file, _nea->uc_1->instruction_decoder, "nea.cu.instruction_decoder");
 
 		sc_trace(t_file, _nea->pc_load, "nea.pc_load");
 		sc_trace(t_file, _nea->pc_inc, "nea.pc_inc");
 		sc_trace(t_file, _nea->mem_addr_sel, "nea.mem_addr_sel");
+		sc_trace(t_file, _nea->mem_addr_in, "nea.mem_addr_in");
+		sc_trace(t_file, _nea->mem_data_out, "nea.mem_data_out");
+		sc_trace(t_file, _nea->mem_data_in, "nea.mem_data_out");
 		sc_trace(t_file, _nea->mem_rd, "nea.mem_rd");
 		sc_trace(t_file, _nea->mem_wr, "nea.mem_wr");
 		sc_trace(t_file, _nea->ac_load, "nea.ac_load");
+		sc_trace(t_file, _nea->ula_op, "nea.ula_op");
 
 		sc_trace(t_file, _nea->main_state, "nea.main_state");
+		sc_trace(t_file, _nea->pc_data_out, "nea.pc_data_out");
+		sc_trace(t_file, _nea->pc_1->data_out, "nea.pc.data_out");
+
+
+		sc_trace(t_file, _nea->mem_1->rd, "nea.mem.rd");
+		sc_trace(t_file, _nea->mem_1->data_out, "nea.mem.data_out");
+		sc_trace(t_file, _nea->mem_1->data_out, "nea.mem.data_out");
+
+		sc_trace(t_file, _nea->ac_1->data_out, "nea.ac.data_out");
 
 		//---------------------------------------------------------------------
 		sc_start(20, SC_NS);
@@ -771,3 +330,5 @@ SC_MODULE(neander){
 	  	return 0;
 	}
 };
+
+#endif

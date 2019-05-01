@@ -1,6 +1,10 @@
 // *****************************************************************************
 // lucas on 29/03/19.
 // *****************************************************************************
+
+#ifndef Machine_State_H
+#define Machine_State_H
+
 #include <iostream>
 #include <systemc.h>
 
@@ -12,13 +16,13 @@
 //Comum States:
 enum{
 	EXIT_STATE=0,
-	NOP_STATE,
-	HALT_STATE,
-	RESET_STATE,
-	START_STATE,
-	STOP_STATE,
-	HELLOWORD_STATE,
-	STANDBY_STATE
+	NOP_STATE,//1
+	HALT_STATE,//2
+	RESET_STATE,//3
+	START_STATE,//4
+	STOP_STATE,//5
+	HELLOWORD_STATE,//6
+	STANDBY_STATE//7
 };
 
 //=============================================================================
@@ -31,9 +35,11 @@ enum{
 //Control Unit states
 enum{
 	STANDBY_UI_STATE=STANDBY_STATE,
-	FETCH_OP_STATE,
-	FETCH_OPERATING_STATE,
-	LOAD_AC_STATE
+	FETCH_OP_STATE,//8
+	DECODE_OP_STATE,//9
+	FETCH_OPERATING_STATE,//10
+	LOAD_AC_STATE,//11
+	NEXT_STATE//12
 };
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -58,3 +64,5 @@ enum{
 	ULA_AND, 
 	ULA_NOT 
 };
+
+#endif

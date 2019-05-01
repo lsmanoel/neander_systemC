@@ -6,6 +6,8 @@
 
 #IncludeRegexTransform: 
 
+/home/lucas/CLionProjects/neander/ac.h
+
 /home/lucas/CLionProjects/neander/machine_state.h
 iostream
 -
@@ -15,12 +17,34 @@ systemc.h
 /home/lucas/CLionProjects/neander/main.cpp
 systemc.h
 -
+machine_state.h
+/home/lucas/CLionProjects/neander/machine_state.h
+pc.h
+/home/lucas/CLionProjects/neander/pc.h
+ac.h
+/home/lucas/CLionProjects/neander/ac.h
+ula.h
+/home/lucas/CLionProjects/neander/ula.h
+mux.h
+/home/lucas/CLionProjects/neander/mux.h
+mem.h
+/home/lucas/CLionProjects/neander/mem.h
+uc.h
+/home/lucas/CLionProjects/neander/uc.h
 neander.h
 /home/lucas/CLionProjects/neander/neander.h
 
+/home/lucas/CLionProjects/neander/mem.h
+
+/home/lucas/CLionProjects/neander/mux.h
+
 /home/lucas/CLionProjects/neander/neander.h
-machine_state.h
-/home/lucas/CLionProjects/neander/machine_state.h
+
+/home/lucas/CLionProjects/neander/pc.h
+
+/home/lucas/CLionProjects/neander/uc.h
+
+/home/lucas/CLionProjects/neander/ula.h
 
 /usr/local/systemc233/include/sysc/communication/sc_buffer.h
 sysc/communication/sc_signal.h
