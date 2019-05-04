@@ -38,8 +38,9 @@ enum{
 	FETCH_OP_STATE,//8
 	DECODE_OP_STATE,//9
 	FETCH_OPERATING_STATE,//10
-	LOAD_AC_STATE,//11
-	NEXT_STATE//12
+	ULA_OPERATION_STATE,//11
+	LOAD_AC_STATE,//12
+	NEXT_STATE//13
 };
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

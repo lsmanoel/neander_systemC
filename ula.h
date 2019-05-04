@@ -9,6 +9,8 @@
 //*****************************************************************************
 //Arithmetic Logic Unit (ULA):
 SC_MODULE(ula){
+	sc_in<bool>			op_now;
+
 	sc_out<bool> 		flagN;
 	sc_out<bool> 		flagZ;
 
@@ -25,10 +27,10 @@ SC_MODULE(ula){
 
 	void process()
 	{
-		_add_result = input_a + input_b;
-		_or_result  = input_a | input_b;
-		_and_result = input_a & input_b;
-		_not_result = ~input_a;
+		_add_result.write(input_a.read() + input_b.read());
+		_or_result.write(input_a.read() | input_b.read());
+		_and_result.write(input_a.read() & input_b.read());
+		_not_result.write(~input_a.read());
 		switch(op){
 			case ULA_ADD: result.write(_add_result); break;
 			case ULA_OR:  result.write(_or_result);  break;
@@ -41,8 +43,8 @@ SC_MODULE(ula){
 
 	SC_CTOR(ula)
 	{
-		SC_METHOD(process);
-		sensitive << input_a << input_b << op; 
+		SC_METHOD(process)	
+		sensitive << op_now;
 	}
 
 	void helloword()

@@ -12,7 +12,9 @@ using namespace std;
 //Neander:
 SC_MODULE(neander){
 	sc_in<bool>			clock;
-
+	// sc_signal<bool>		clock_out;
+	// sc_signal<bool>		clock_en;
+	
 	//----------------------------------------------
 	uc*					uc_1;
 	pc*					pc_1;
@@ -41,6 +43,7 @@ SC_MODULE(neander){
 
 	sc_signal<bool> 	ula_flagN;
 	sc_signal<bool> 	ula_flagZ;
+	sc_signal<bool>		ula_op_now;
 	sc_signal<uint8_t>	ula_op;
 	sc_signal<uint8_t>	ula_result;
 	
@@ -50,11 +53,21 @@ SC_MODULE(neander){
 	void process()
 	{
 		while(1)
-		{
+		{	
 			state_process();
 			wait();
 		}
 	}
+
+	// void method_clock_en()
+	// {
+	// 	if(clock_en.read()==true){
+	// 		clock_out.write(clock.read());
+	// 	}
+	// 	else{
+	// 		clock_out.write(false);
+	// 	}
+	// }
 
 	SC_CTOR(neander)
 	{
@@ -65,14 +78,17 @@ SC_MODULE(neander){
 		ula_1 = new ula("ULA");
 		ac_1 = new ac("AC");
 
+		cout << '1';
 		//------------------------------------------
 		main_state = RESET_STATE;
 
 		//------------------------------------------
 		uc_1->clock(clock);
+		// clock_en.write(true);
 
 		uc_1->ula_flagN(ula_flagN);
 		uc_1->ula_flagZ(ula_flagZ);
+		uc_1->ula_op_now(ula_op_now);
 		uc_1->ula_op(ula_op);
 
 		uc_1->pc_load(pc_load);
@@ -109,6 +125,7 @@ SC_MODULE(neander){
 		//------------------------------------------
 		ula_1->flagN(ula_flagN);
 		ula_1->flagZ(ula_flagZ);
+		ula_1->op_now(ula_op_now);
 		ula_1->op(ula_op);
 		ula_1->result(ula_result);
 
@@ -120,12 +137,18 @@ SC_MODULE(neander){
 		ac_1->input_a(ula_result);
 		ac_1->data_out(ac_data_out);
 
+
+
 		//------------------------------------------
 		SC_CTHREAD(process, clock.pos())
+
+		// SC_METHOD(method_clock_en)
+		// sensitive << clock << clock_en;
 	}
 
 
 	void helloword(){
+		cout << endl;
 		cout << "-----------------------------------" << endl;
 		cout << this->name() <<" says: HelloWord" << endl;
 		cout << "-----------------------------------" << endl;
@@ -160,12 +183,15 @@ SC_MODULE(neander){
 
 	void halt_state_process()
 	{
+		cout << endl;
 		cout << "===================================" << endl;
-		cout << this->name() << "HALT!" << endl;
+		cout << this->name() << " says: HALT!" << endl;
 		cout << "===================================" << endl;
 		cout << "+++++++++++++++++++++++++++++++++++" << endl;
-
-		while(1){wait();};
+		
+		// clock_en.write(false);
+		
+		// while(1){wait();};
 	}
 
 	void reset_state_process()
@@ -188,6 +214,7 @@ SC_MODULE(neander){
 		// cout << "===================================" << endl;
 		// cout << this->name() <<" THREAD says: " << "STOP" << endl;
 		// cout << "===================================" << endl;
+		// clock_en.write(false);
 	}
 
 	void helloword_state_process()
@@ -266,18 +293,21 @@ SC_MODULE(neander){
 
 		_nea->set_program(bootloader_neander);
 
-		sc_uint<8> memory_bank_1[255];
+		sc_uint<8> memory_bank_1[256];
 
 		sc_uint<8> _program_index = 0;
 
 		//memory_bank_1[_program_index++]=NOP_STATE;
 		memory_bank_1[_program_index++]=LDA_STATE;
-		memory_bank_1[_program_index++]=100;
+		memory_bank_1[_program_index++]=10;
 		memory_bank_1[_program_index++]=ADD_STATE;
-		memory_bank_1[_program_index++]=102;
+		memory_bank_1[_program_index++]=11;
 		memory_bank_1[_program_index++]=STA_STATE;
 		memory_bank_1[_program_index++]=255;
 		memory_bank_1[_program_index++]=HLT_STATE;
+		while(_program_index<255){
+			memory_bank_1[_program_index++]=0;
+		}
 
 
 
@@ -286,6 +316,7 @@ SC_MODULE(neander){
 		//---------------------------------------------------------------------
 		sc_trace_file *t_file = sc_create_vcd_trace_file(trace_file);
 		sc_trace(t_file, _clock, "nea.clock");
+		// sc_trace(t_file, _nea->clock_out, "nea.clock");
 		sc_trace(t_file, _nea->uc_1->clock, "nea.cu.clock");
 
 		sc_trace(t_file, _nea->uc_1->main_state, "nea.cu.main_state");
@@ -301,6 +332,7 @@ SC_MODULE(neander){
 		sc_trace(t_file, _nea->mem_wr, "nea.mem_wr");
 		sc_trace(t_file, _nea->ac_load, "nea.ac_load");
 		sc_trace(t_file, _nea->ula_op, "nea.ula_op");
+		sc_trace(t_file, _nea->ula_op_now, "nea.ula_op_now");
 
 		sc_trace(t_file, _nea->main_state, "nea.main_state");
 		sc_trace(t_file, _nea->pc_data_out, "nea.pc_data_out");
@@ -312,6 +344,10 @@ SC_MODULE(neander){
 		sc_trace(t_file, _nea->mem_1->data_out, "nea.mem.data_out");
 
 		sc_trace(t_file, _nea->ac_1->data_out, "nea.ac.data_out");
+		sc_trace(t_file, _nea->ac_data_out, "nea.ac_data_out");
+		sc_trace(t_file, _nea->ula_result, "nea.ula_result");
+		sc_trace(t_file, _nea->ula_1->input_a, "nea.ula.input_a");
+		sc_trace(t_file, _nea->ula_1->input_b, "nea.ula.input_b");
 
 		//---------------------------------------------------------------------
 		sc_start(20, SC_NS);

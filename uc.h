@@ -15,8 +15,9 @@ SC_MODULE(uc){
 
 	sc_in<bool> 		ula_flagN;
 	sc_in<bool> 		ula_flagZ;
-
+	sc_out<bool>		ula_op_now;
 	sc_out<uint8_t>		ula_op;
+
 
 	sc_out<bool>		pc_load;
 	sc_out<bool>		pc_inc;
@@ -54,11 +55,15 @@ SC_MODULE(uc){
 
 		uc_counter_cycle=0;
 
+		_operating.write(false);
+		_accumulating.write(false);
+
 		SC_THREAD(process)	
 		sensitive << clock;
 	}
 
 	void helloword(){
+		cout << endl;
 		cout << "-----------------------------------" << endl;
 		cout << this->name() <<" says: HelloWord" << endl;
 		cout << "-----------------------------------" << endl;
@@ -88,14 +93,18 @@ SC_MODULE(uc){
 
 	void halt_state_process()
 	{
+		main_state.write(STANDBY_STATE); 
+
+		cout << endl;
 		cout << "===================================" << endl;
-		cout << this->name() << "HALT!" << endl;
+		cout << this->name() <<" THREAD says: " << "HALT!" << endl;
 		cout << "===================================" << endl;
 		cout << "+++++++++++++++++++++++++++++++++++" << endl;
 	}
 
 	void reset_state_process()
 	{
+		cout << endl;
 		cout << "===================================" << endl;
 		cout << this->name() <<" THREAD says: " << "RESET" << endl;
 		cout << "===================================" << endl;
@@ -103,6 +112,7 @@ SC_MODULE(uc){
 
 	void start_state_process()
 	{
+		cout << endl;
 		cout << "===================================" << endl;
 		cout << this->name() <<" THREAD says: " << "START" << endl;
 		cout << "===================================" << endl;
@@ -110,6 +120,7 @@ SC_MODULE(uc){
 
 	void stop_state_process()
 	{
+		cout << endl;
 		cout << "===================================" << endl;
 		cout << this->name() <<" THREAD says: " << "STOP" << endl;
 		cout << "===================================" << endl;
@@ -117,6 +128,7 @@ SC_MODULE(uc){
 
 	void helloword_state_process()
 	{
+		cout << endl;
 		cout << "===================================" << endl;
 		cout << this->name() <<" THREAD says: " << "HelloWord" << endl;
 		cout << "===================================" << endl;
@@ -178,9 +190,15 @@ SC_MODULE(uc){
 				break;
 
 			case FETCH_OPERATING_STATE:
-				main_state.write(LOAD_AC_STATE);
+				main_state.write(ULA_OPERATION_STATE);
 				//-----------------------------
 				fetch_operating_state_process();
+				break;
+
+			case ULA_OPERATION_STATE:
+				main_state.write(LOAD_AC_STATE);
+				//-----------------------------
+				ula_operation_state_process();
 				break;
 
 			case LOAD_AC_STATE:
@@ -198,8 +216,6 @@ SC_MODULE(uc){
 	void nop_op_process()
 	{
 		//-----------------------------------
-		mem_addr_sel.write(false);
-
 		ula_op.write(ULA_BYPASS);
 
 		_operating.write(false);
@@ -211,8 +227,6 @@ SC_MODULE(uc){
 	void sta_op_process()
 	{
 		//-----------------------------------
-		mem_addr_sel.write(true);
-
 		ula_op.write(ULA_BYPASS);
 
 		_operating.write(false);
@@ -224,8 +238,6 @@ SC_MODULE(uc){
 	void lda_op_process()
 	{
 		//-----------------------------------
-		mem_addr_sel.write(true);
-
 		ula_op.write(ULA_BYPASS);
 
 		_operating.write(true);
@@ -237,8 +249,6 @@ SC_MODULE(uc){
 	void add_op_process()
 	{
 		//-----------------------------------
-		mem_addr_sel.write(false);	
-
 		ula_op.write(ULA_ADD);
 
 		_operating.write(true);
@@ -250,8 +260,6 @@ SC_MODULE(uc){
 	void or_op_process()
 	{
 		//-----------------------------------
-		mem_addr_sel.write(true);	
-
 		ula_op.write(ULA_OR);
 
 		_operating.write(true);
@@ -263,8 +271,6 @@ SC_MODULE(uc){
 	void and_op_process()
 	{
 		//-----------------------------------
-		mem_addr_sel.write(true);	
-
 		ula_op.write(ULA_AND);
 
 		_operating.write(true);
@@ -276,8 +282,6 @@ SC_MODULE(uc){
 	void not_op_process()
 	{
 		//-----------------------------------
-		mem_addr_sel.write(false);	
-
 		ula_op.write(ULA_NOT);
 
 		_operating.write(false);
@@ -291,8 +295,6 @@ SC_MODULE(uc){
 		mem_rd.write(true);
 
 		//-----------------------------------
-		mem_addr_sel.write(false);	
-
 		_operating.write(true);
 		_accumulating.write(false);
 
@@ -303,8 +305,6 @@ SC_MODULE(uc){
 	{
 
 		//-----------------------------------
-		mem_addr_sel.write(false);
-
 		_operating.write(true);
 		_accumulating.write(false);
 
@@ -318,9 +318,7 @@ SC_MODULE(uc){
 			mem_rd.write(true);
 		}
 
-		//-----------------------------------
-		mem_addr_sel.write(false);	
-		
+		//-----------------------------------	
 		_operating.write(true);
 		_accumulating.write(false);
 
@@ -329,13 +327,14 @@ SC_MODULE(uc){
 
 	void fetch_op_state_process()
 	{
+		cout << endl;
 		cout << "===================================" << endl;
-		cout << "-> FETCH_OP";
+		cout << "-> FETCH_OP ";
 
-		pc_inc.write(true);
 		mem_rd.write(true);
+
 		//-----------------------------------
-		mem_addr_sel.write(true);
+		mem_addr_sel.write(false);
 
 		_operating.write(false);
 		_accumulating.write(false);
@@ -343,7 +342,7 @@ SC_MODULE(uc){
 
 	void decode_op_state_process()
 	{
-		cout << " -> DECODE_OP";
+		cout << "-> DECODE_OP ";
 		switch(instruction_decoder)
 		{
 			case STA_STATE: sta_op_process(); 		break;
@@ -359,31 +358,46 @@ SC_MODULE(uc){
 
 			default: nop_op_process(); break;
 		};
+
 		mem_rd.write(true);
 		pc_inc.write(true);
+
+		//-----------------------------------
+		mem_addr_sel.write(false);
 	}
 
 	void fetch_operating_state_process()
 	{
 		if(_operating.read()==true){
-			cout << " -> FETCH_OPERATING";
+			cout << "-> FETCH_OPERATING ";
 		}
 
-		pc_inc.write(true);
 		mem_rd.write(true);
+
+		//-----------------------------------
+		mem_addr_sel.write(true);
+	}
+
+	void ula_operation_state_process()
+	{
+		cout << "-> ULA_OPERATION  ";
+
+		ula_op_now.write(true);
+		
 		//-----------------------------------
 		mem_addr_sel.write(true);
 	}
 
 	void load_ac_state_process()
 	{
+		cout << "-> LOAD_AC " << endl;
+
 		if(_accumulating.read()==true){
-			cout << " -> LOAD_AC|" << endl;
 			ac_load.write(true);
 		}
 
-		pc_inc.write(true);
 		mem_rd.write(true);
+		pc_inc.write(true);
 
 		//-----------------------------------
 		mem_addr_sel.write(false);
@@ -396,6 +410,7 @@ SC_MODULE(uc){
 		pc_inc.write(false);
 		mem_rd.write(false);
 		mem_wr.write(false);
+		ula_op_now.write(false);
 	}
 };
 
