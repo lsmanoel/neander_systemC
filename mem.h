@@ -34,7 +34,7 @@ SC_MODULE(mem){
 	void process()
 	{
 		if(rd.read()==true) mem_rd_process();
-		
+
 		if(wr.read()==true) mem_wr_process();
 		// else data_out.write(data_in.read());
 	}
@@ -45,7 +45,7 @@ SC_MODULE(mem){
 		// cout << endl;
 		// cout << "-----------------------)))))---------------" << endl;
 		// cout << "\t" << this->name() <<" memory_bank[addr_in.read()]=" << memory_bank[addr_in.read()] << endl;
-		// cout << "\t" << "---------------(((((---------------" << endl; 
+		// cout << "-----------------------)))))---------------" << endl; 
 		data_out.write(memory_bank[addr_in.read()]);
 
 	}
@@ -58,7 +58,7 @@ SC_MODULE(mem){
 	void helloword(){
 		cout << "-----------------------)))))---------------" << endl;
 		cout << "\t" << this->name() <<" says: HelloWord" << endl;
-		cout << "\t" << "-----------------------------------" << endl;
+		cout << "-----------------------)))))---------------" << endl;
 	}
 };
 

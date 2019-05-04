@@ -14,6 +14,7 @@ add wave	-radix dec			-label uc_1.pc_data_out		/SystemC/nea/pc_data_out
 add wave	-radix binary		-label uc_1.mem_addr_sel	/SystemC/nea/mem_addr_sel
 add wave	-radix dec			-label uc_1.mem_data_out	/SystemC/nea/mem_data_out
 add wave	-radix binary		-label uc_1.mem_rd			/SystemC/nea/mem_rd
+add wave	-radix binary		-label uc_1.mem_wr			/SystemC/nea/mem_wr
 add wave	-radix dec			-label uc_1.mem_addr_in		/SystemC/nea/mem_addr_in
 add wave	-radix binary		-label ac_load				/SystemC/nea/ac_load
 add wave	-radix dec			-label ac_data_out			/SystemC/nea/ac_data_out

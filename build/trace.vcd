@@ -1,5 +1,5 @@
 $date
-     May 04, 2019       18:21:09
+     May 04, 2019       20:13:24
 $end
 
 $version
@@ -18,18 +18,17 @@ $var wire    1  aaaad  pc_inc       $end
 $var wire    1  aaaae  mem_addr_sel       $end
 $var wire    8  aaaaf  mem_addr_in [7:0]  $end
 $var wire    8  aaaag  mem_data_out [7:0]  $end
-$var wire    8  aaaah  mem_data_out [7:0]  $end
-$var wire    1  aaaai  mem_rd       $end
-$var wire    1  aaaaj  mem_wr       $end
-$var wire    1  aaaak  ac_load       $end
-$var wire    8  aaaal  ula_op [7:0]  $end
-$var wire    1  aaaam  ula_op_now       $end
-$var wire    8  aaaan  main_state [7:0]  $end
-$var wire    8  aaaao  pc_data_out [7:0]  $end
-$var wire    8  aaaap  ac_data_out [7:0]  $end
-$var wire    8  aaaaq  ula_result [7:0]  $end
+$var wire    1  aaaah  mem_rd       $end
+$var wire    1  aaaai  mem_wr       $end
+$var wire    1  aaaaj  ac_load       $end
+$var wire    8  aaaak  ula_op [7:0]  $end
+$var wire    1  aaaal  ula_op_now       $end
+$var wire    8  aaaam  main_state [7:0]  $end
+$var wire    8  aaaan  pc_data_out [7:0]  $end
+$var wire    8  aaaao  ac_data_out [7:0]  $end
+$var wire    8  aaaap  ula_result [7:0]  $end
 $scope module ac $end
-$var wire    8  aaaar  data_out [7:0]  $end
+$var wire    8  aaaaq  data_out [7:0]  $end
 $upscope $end
 $scope module cu $end
 $var wire    8  aaaab  main_state [7:0]  $end
@@ -37,16 +36,17 @@ $var wire    8  aaaay  instruction_decoder [7:0]  $end
 $var wire    1  aaaaz  clock       $end
 $upscope $end
 $scope module mem $end
+$var wire    8  aaaat  data_out [7:0]  $end
 $var wire    8  aaaau  data_out [7:0]  $end
-$var wire    8  aaaav  data_out [7:0]  $end
+$var wire    8  aaaav  data_in [7:0]  $end
 $var wire    1  aaaaw  rd       $end
 $upscope $end
 $scope module pc $end
 $var wire    8  aaaax  data_out [7:0]  $end
 $upscope $end
 $scope module ula $end
-$var wire    8  aaaas  input_b [7:0]  $end
-$var wire    8  aaaat  input_a [7:0]  $end
+$var wire    8  aaaar  input_b [7:0]  $end
+$var wire    8  aaaas  input_a [7:0]  $end
 $upscope $end
 $upscope $end
 $upscope $end
@@ -64,13 +64,13 @@ b1000 aaaab
 0aaaae
 b0 aaaaf
 b0 aaaag
-b0 aaaah
+0aaaah
 0aaaai
 0aaaaj
-0aaaak
-b0 aaaal
-0aaaam
-b11 aaaan
+b0 aaaak
+0aaaal
+b11 aaaam
+b0 aaaan
 b0 aaaao
 b0 aaaap
 b0 aaaaq
@@ -93,18 +93,18 @@ $end
 1aaaaa
 b1001 aaaab
 b100000 aaaag
-1aaaai
-b100 aaaan
+1aaaah
+b100 aaaam
+b100000 aaaas
 b100000 aaaat
 b100000 aaaau
-b100000 aaaav
 1aaaaw
 b100000 aaaay
 1aaaaz
 
 #1500
 0aaaaa
-0aaaai
+0aaaah
 0aaaaw
 0aaaaz
 
@@ -113,9 +113,9 @@ b100000 aaaay
 b1010 aaaab
 1aaaad
 b1 aaaaf
-1aaaai
-b111 aaaan
-b1 aaaao
+1aaaah
+b111 aaaam
+b1 aaaan
 1aaaaw
 b1 aaaax
 1aaaaz
@@ -123,7 +123,7 @@ b1 aaaax
 #2500
 0aaaaa
 0aaaad
-0aaaai
+0aaaah
 0aaaaw
 0aaaaz
 
@@ -133,30 +133,30 @@ b1011 aaaab
 1aaaae
 b1010 aaaaf
 b1010 aaaag
-1aaaai
+1aaaah
+b1010 aaaas
 b1010 aaaat
 b1010 aaaau
-b1010 aaaav
 1aaaaw
 b1010 aaaay
 1aaaaz
 
 #3500
 0aaaaa
-0aaaai
+0aaaah
 0aaaaw
 0aaaaz
 
 #4000
 1aaaaa
 b1100 aaaab
-1aaaam
-b1010 aaaaq
+1aaaal
+b1010 aaaap
 1aaaaz
 
 #4500
 0aaaaa
-0aaaam
+0aaaal
 0aaaaz
 
 #5000
@@ -166,15 +166,16 @@ b1000 aaaab
 0aaaae
 b10 aaaaf
 b0 aaaag
-1aaaai
-1aaaak
-b10 aaaao
-b1010 aaaap
+1aaaah
+1aaaaj
+b10 aaaan
+b1010 aaaao
+b1010 aaaaq
 b1010 aaaar
-b1010 aaaas
+b0 aaaas
 b0 aaaat
 b0 aaaau
-b0 aaaav
+b1010 aaaav
 1aaaaw
 b10 aaaax
 b0 aaaay
@@ -183,8 +184,8 @@ b0 aaaay
 #5500
 0aaaaa
 0aaaad
-0aaaai
-0aaaak
+0aaaah
+0aaaaj
 0aaaaw
 0aaaaz
 
@@ -192,17 +193,17 @@ b0 aaaay
 1aaaaa
 b1001 aaaab
 b110000 aaaag
-1aaaai
+1aaaah
+b110000 aaaas
 b110000 aaaat
 b110000 aaaau
-b110000 aaaav
 1aaaaw
 b110000 aaaay
 1aaaaz
 
 #6500
 0aaaaa
-0aaaai
+0aaaah
 0aaaaw
 0aaaaz
 
@@ -211,9 +212,9 @@ b110000 aaaay
 b1010 aaaab
 1aaaad
 b11 aaaaf
-1aaaai
-b1 aaaal
-b11 aaaao
+1aaaah
+b1 aaaak
+b11 aaaan
 1aaaaw
 b11 aaaax
 1aaaaz
@@ -221,7 +222,7 @@ b11 aaaax
 #7500
 0aaaaa
 0aaaad
-0aaaai
+0aaaah
 0aaaaw
 0aaaaz
 
@@ -231,30 +232,30 @@ b1011 aaaab
 1aaaae
 b1011 aaaaf
 b1011 aaaag
-1aaaai
+1aaaah
+b1011 aaaas
 b1011 aaaat
 b1011 aaaau
-b1011 aaaav
 1aaaaw
 b1011 aaaay
 1aaaaz
 
 #8500
 0aaaaa
-0aaaai
+0aaaah
 0aaaaw
 0aaaaz
 
 #9000
 1aaaaa
 b1100 aaaab
-1aaaam
+1aaaal
 1aaaaz
 
 #9500
 0aaaaa
-0aaaam
-b10101 aaaaq
+0aaaal
+b10101 aaaap
 0aaaaz
 
 #10000
@@ -264,15 +265,16 @@ b1000 aaaab
 0aaaae
 b100 aaaaf
 b0 aaaag
-1aaaai
-1aaaak
-b100 aaaao
-b10101 aaaap
+1aaaah
+1aaaaj
+b100 aaaan
+b10101 aaaao
+b10101 aaaaq
 b10101 aaaar
-b10101 aaaas
+b0 aaaas
 b0 aaaat
 b0 aaaau
-b0 aaaav
+b10101 aaaav
 1aaaaw
 b100 aaaax
 b0 aaaay
@@ -281,26 +283,26 @@ b0 aaaay
 #10500
 0aaaaa
 0aaaad
-0aaaai
-0aaaak
+0aaaah
+0aaaaj
 0aaaaw
 0aaaaz
 
 #11000
 1aaaaa
 b1001 aaaab
-b10000 aaaag
-1aaaai
-b10000 aaaat
-b10000 aaaau
-b10000 aaaav
+b110000 aaaag
+1aaaah
+b110000 aaaas
+b110000 aaaat
+b110000 aaaau
 1aaaaw
-b10000 aaaay
+b110000 aaaay
 1aaaaz
 
 #11500
 0aaaaa
-0aaaai
+0aaaah
 0aaaaw
 0aaaaz
 
@@ -309,9 +311,8 @@ b10000 aaaay
 b1010 aaaab
 1aaaad
 b101 aaaaf
-1aaaai
-b0 aaaal
-b101 aaaao
+1aaaah
+b101 aaaan
 1aaaaw
 b101 aaaax
 1aaaaz
@@ -319,7 +320,7 @@ b101 aaaax
 #12500
 0aaaaa
 0aaaad
-0aaaai
+0aaaah
 0aaaaw
 0aaaaz
 
@@ -327,32 +328,32 @@ b101 aaaax
 1aaaaa
 b1011 aaaab
 1aaaae
-b11111111 aaaaf
-b11111111 aaaag
-1aaaai
-b11111111 aaaat
-b11111111 aaaau
-b11111111 aaaav
+b1 aaaaf
+b1 aaaag
+1aaaah
+b1 aaaas
+b1 aaaat
+b1 aaaau
 1aaaaw
-b11111111 aaaay
+b1 aaaay
 1aaaaz
 
 #13500
 0aaaaa
-0aaaai
+0aaaah
 0aaaaw
 0aaaaz
 
 #14000
 1aaaaa
 b1100 aaaab
-1aaaam
-b11111111 aaaaq
+1aaaal
 1aaaaz
 
 #14500
 0aaaaa
-0aaaam
+0aaaal
+b10110 aaaap
 0aaaaz
 
 #15000
@@ -361,49 +362,56 @@ b1000 aaaab
 1aaaad
 0aaaae
 b110 aaaaf
-b0 aaaag
-1aaaai
-b110 aaaao
-b0 aaaat
-b0 aaaau
-b0 aaaav
+b1010 aaaag
+1aaaah
+1aaaaj
+b110 aaaan
+b10110 aaaao
+b10110 aaaaq
+b10110 aaaar
+b1010 aaaas
+b1010 aaaat
+b1010 aaaau
+b10110 aaaav
 1aaaaw
 b110 aaaax
-b0 aaaay
+b1010 aaaay
 1aaaaz
 
 #15500
 0aaaaa
 0aaaad
-0aaaai
+0aaaah
+0aaaaj
 0aaaaw
 0aaaaz
 
 #16000
 1aaaaa
 b1001 aaaab
-b11110000 aaaag
-1aaaai
-b11110000 aaaat
-b11110000 aaaau
-b11110000 aaaav
+b10000 aaaag
+1aaaah
+b10000 aaaas
+b10000 aaaat
+b10000 aaaau
 1aaaaw
-b11110000 aaaay
+b10000 aaaay
 1aaaaz
 
 #16500
 0aaaaa
-0aaaai
+0aaaah
 0aaaaw
 0aaaaz
 
 #17000
 1aaaaa
-b111 aaaab
+b1010 aaaab
 1aaaad
 b111 aaaaf
-1aaaai
-b111 aaaao
+1aaaah
+b0 aaaak
+b111 aaaan
 1aaaaw
 b111 aaaax
 1aaaaz
@@ -411,24 +419,39 @@ b111 aaaax
 #17500
 0aaaaa
 0aaaad
-0aaaai
+0aaaah
 0aaaaw
 0aaaaz
 
 #18000
 1aaaaa
+b1011 aaaab
+1aaaae
+b11111111 aaaaf
+b11111111 aaaag
+1aaaah
+b11111111 aaaas
+b11111111 aaaat
+b11111111 aaaau
+1aaaaw
+b11111111 aaaay
 1aaaaz
 
 #18500
 0aaaaa
+0aaaah
+0aaaaw
 0aaaaz
 
 #19000
 1aaaaa
+b1100 aaaab
+1aaaai
 1aaaaz
 
 #19500
 0aaaaa
+0aaaai
 0aaaaz
 
 #20000

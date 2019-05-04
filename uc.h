@@ -34,6 +34,7 @@ SC_MODULE(uc){
 	
 	sc_signal<bool>		_operating;
 	sc_signal<bool>		_accumulating;
+	sc_signal<bool>		_storing;
 
 	void process(){
 		while(main_state){
@@ -220,6 +221,7 @@ SC_MODULE(uc){
 
 		_operating.write(false);
 		_accumulating.write(false);
+		_storing.write(false);
 
 		cout << " nop|" << endl;
 	}
@@ -231,6 +233,7 @@ SC_MODULE(uc){
 
 		_operating.write(false);
 		_accumulating.write(false);
+		_storing.write(true);
 
 		cout << " sta|" << endl;
 	}
@@ -242,6 +245,7 @@ SC_MODULE(uc){
 
 		_operating.write(true);
 		_accumulating.write(true);
+		_storing.write(false);
 
 		cout << " lda";
 	}
@@ -253,6 +257,7 @@ SC_MODULE(uc){
 
 		_operating.write(true);
 		_accumulating.write(true);
+		_storing.write(false);
 
 		cout << " add";
 	}
@@ -264,6 +269,7 @@ SC_MODULE(uc){
 
 		_operating.write(true);
 		_accumulating.write(true);
+		_storing.write(false);
 
 		cout << " or";
 	}
@@ -275,6 +281,7 @@ SC_MODULE(uc){
 
 		_operating.write(true);
 		_accumulating.write(true);
+		_storing.write(false);
 
 		cout << " and";
 	}
@@ -286,6 +293,7 @@ SC_MODULE(uc){
 
 		_operating.write(false);
 		_accumulating.write(true);
+		_storing.write(false);
 
 		cout << " not";
 	}
@@ -297,6 +305,7 @@ SC_MODULE(uc){
 		//-----------------------------------
 		_operating.write(true);
 		_accumulating.write(false);
+		_storing.write(false);
 
 		cout << " jmp";
 	}
@@ -307,6 +316,7 @@ SC_MODULE(uc){
 		//-----------------------------------
 		_operating.write(true);
 		_accumulating.write(false);
+		_storing.write(false);
 
 		cout << " jn";
 	}
@@ -321,6 +331,7 @@ SC_MODULE(uc){
 		//-----------------------------------	
 		_operating.write(true);
 		_accumulating.write(false);
+		_storing.write(false);
 
 		cout << " jz";
 	}
@@ -338,6 +349,7 @@ SC_MODULE(uc){
 
 		_operating.write(false);
 		_accumulating.write(false);
+		_storing.write(false);
 	}
 
 	void decode_op_state_process()
@@ -380,21 +392,32 @@ SC_MODULE(uc){
 
 	void ula_operation_state_process()
 	{
-		cout << "-> ULA_OPERATION  ";
+		if(_storing.read()==true){
+			mem_wr.write(true);
+			cout << "-> STORE AC ";
+			//-----------------------------------
+			mem_addr_sel.write(true);
+		}
+		else{
+			cout << "-> ULA_OPERATION  ";
+			ula_op_now.write(true);
+			//-----------------------------------
+			mem_addr_sel.write(true);
+		}
 
-		ula_op_now.write(true);
 		
-		//-----------------------------------
-		mem_addr_sel.write(true);
+
+
 	}
 
 	void load_ac_state_process()
 	{
-		cout << "-> LOAD_AC " << endl;
-
 		if(_accumulating.read()==true){
 			ac_load.write(true);
+			cout << "-> LOAD_AC ";
 		}
+
+		cout << endl;
 
 		mem_rd.write(true);
 		pc_inc.write(true);

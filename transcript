@@ -1,5 +1,30 @@
 do trace.do
 # trace_modelsim.wlf opened as dataset "trace_modelsim"
 # .main_pane.wave.interior.cs.body.pw.wf
+# ** Error: (vish-4014) No objects found matching '/SystemC/nea/mem_data_in'.
+# Error in macro ./trace.do line 16
+# (vish-4014) No objects found matching '/SystemC/nea/mem_data_in'.
+#     while executing
+# "add wave	-radix unsigned		-label uc_1.mem_data_in		/SystemC/nea/mem_data_in"
+cd ..
+do trace.do
+# trace_modelsim.wlf opened as dataset "trace_modelsim1"
+# .main_pane.wave.interior.cs.body.pw.wf
 # 0 ps
 # 21 ns
+cd ..
+do trace.do
+# trace_modelsim.wlf opened as dataset "trace_modelsim2"
+# .main_pane.wave.interior.cs.body.pw.wf
+# ** Error: (vish-4014) No objects found matching '/SystemC/nea/mem_data_in'.
+# Error in macro ./trace.do line 16
+# (vish-4014) No objects found matching '/SystemC/nea/mem_data_in'.
+#     while executing
+# "add wave	-radix unsigned		-label uc_1.mem_data_in		/SystemC/nea/mem_data_in"
+cd ..
+do trace.do
+# trace_modelsim.wlf opened as dataset "trace_modelsim3"
+# .main_pane.wave.interior.cs.body.pw.wf
+# 0 ps
+# 21 ns
+cd ..
