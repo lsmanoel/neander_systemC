@@ -1,13 +1,13 @@
 # Neander - SystemC
 
 * **to Clear:**
-		rm -rf build
+		$ rm -rf build
 
 * **to Build:**
-		mkdir build && cd build && cmake ../ && make && ./neander && cd ..
+		$ mkdir build && cd build && cmake ../ && make && ./neander && cd ..
 	
 * **to ReBuild:**
-		rm -rf build && mkdir build && cd build && cmake ../ && make && ./neander && cd ..
+		$ rm -rf build && mkdir build && cd build && cmake ../ && make && ./neander && cd ..
 
 
 -----
