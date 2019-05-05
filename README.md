@@ -14,4 +14,5 @@
 
 # **Modelsim Script:** [**trace.do**](https://github.com/lsmanoel/neander_systemC/blob/master/trace.do)
 
-
+![
+](https://raw.githubusercontent.com/lsmanoel/neander_systemC/master/img/modelsim_1.png)
