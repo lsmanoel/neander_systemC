@@ -30,4 +30,4 @@ set(CMAKE_CXX_STANDARD 14)
 add_executable(neander main.cpp)
 
 include_directories("/usr/local/systemc233/include")
-target_link_libraries(neander "/usr/local/systemc233/lib-linux64/libsystemc.a")
+target_link_libraries(neander "/usr/local/systemc233/lib-linux64/libsystemc.a"	
